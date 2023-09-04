@@ -1,0 +1,55 @@
+import re
+import gradio as gr
+from datetime import datetime
+
+# Define a list of patterns and responses for the chatbot
+patterns = [
+    (r'hi|hello|hey', ['Hello!', 'Hi there!', 'Hey!']),
+    (r'how are you', ['I am just a computer program, so I don\'t have feelings, but thanks for asking!']),
+    (r'what is your name', ['You can call me Manu.']),
+    (r'bye|goodbye', ['Goodbye!', 'See you later!', 'Take care!']),
+    (r'my name is (.*)', ['Nice to meet you, {}!', 'Hello, {}! How can I assist you today?']),
+    (r'what is my name', ['Your name is {}.', 'You introduced yourself as {}.']),
+    (r'(.*) help (.*)', ['I can help you with various tasks. Just ask me anything.']),
+    (r'zoom link', ['Sure, here is the Zoom meeting link for \n sep 4: https://zoom.us/meeting/register/tJAkdeqorDsuGtHb348OhZ9ZHF5AI2SqHx-u \n sep 11 https://zoom.us/meeting/register/tJIrce-rqjktG9J1Oc0hJUN5DHYIPj22AaEI \n sep 18 https://zoom.us/meeting/register/tJclc-yorzotGd3byd_FoPAaChobZeRX6_1z \n sep 25 https://zoom.us/meeting/register/tJ0qdu-tqD0jGt3lEkXco4Oy-uN8IugacWcl \n oct 9 https://zoom.us/meeting/register/tJYrcOiorDMuE90vfrS1tmQ48md856A_O0f8']),
+    (r'deadline|deadlines', ['I can provide information about deadlines. Please ask me about a specific deadline.']),
+    (r'thank you', ['Glad to know you are satisfied. Any other queries?']),
+    # Pattern to provide the course name
+    (r'course name', ['The course name is Emerging Technologies.']),
+
+    # Pattern to provide mentor details
+    (r'help', ['You can contact the lead at sridharn18@gmail.com for queries related to course']),
+
+    # Pattern to provide the Canva link
+    (r'canva link', ['The link for Canva is https://canvas.instructure.com/courses/7362704.']),
+
+    # Pattern to provide the WhatsApp group link
+    (r'whatsapp group link', ['The WhatsApp group link is https://chat.whatsapp.com/Eo0z7mJpYoFISdkbpPVNaZ.']),
+]
+
+patterns.append((r'what is the date today', [datetime.now().strftime('Today\'s date is %Y-%m-%d.')]))
+
+# Function to get the response based on user input
+def get_response(user_input):
+    # Search for specific patterns
+    for pattern, responses in patterns:
+        match = re.search(pattern, user_input, re.IGNORECASE)
+        if match:
+            response = responses[0]  # Use the first response in the list
+            if '{}' in response:
+                return response.format(match.group(1))
+            return response
+
+    return "I couldn't find a response for that input."
+
+# Define Gradio interface
+iface = gr.Interface(
+    fn=get_response,
+    inputs="text",
+    outputs="text",
+    title="Chatbot",
+    description="A simple chatbot that can answer questions and provide information.",
+)
+
+# Launch the Gradio interface
+iface.launch()
